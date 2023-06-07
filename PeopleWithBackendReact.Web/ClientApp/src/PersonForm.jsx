@@ -5,22 +5,22 @@ function PersonForm({ person, onTextChange, onAddClick, isEditing, onUpdateClick
     return <>
         <div className="row p-5 rounded" style={{ backgroundColor: '#E9ECEF' }}>
             <div className="col-md-3" >
-                <input value={firstName} onChange={onTextChange} name='firstName' type="text" className="form-control" placeholder="First Name" />
+                <input type="text" value={firstName} onChange={onTextChange} className="form-control" placeholder="First Name" name="firstName" />
             </div>
             <div className="col-md-3" >
-                < input value={lastName} onChange={onTextChange} name='lastName' type="text" className="form-control" placeholder="Last Name" />
+                <input type="text" value={lastName} onChange={onTextChange} className="form-control" placeholder="Last Name" name="lastName" />
             </div>
             <div className="col-md-3" >
-                < input value={age} onChange={onTextChange} name='age' type="text" className="form-control" placeholder="Age" />
+                <input type="text" value={age} onChange={onTextChange} className="form-control" placeholder="Age" name="age" />
             </div>
             <div className="col-md-3" >
-                {isEditing ?
+                {!isEditing ?
+                    <button onClick={onAddClick} className='btn btn-primary w-100'>Add</button> :
                     <div>
-                        <button onClick={onUpdateClick} className='btn btn-warning w-100'> Update </button>
-                        <button onClick={onCancelClick} className='btn btn-dark w-100'> Cancel </button> </div> :
-                    <div>
-                        <button onClick={onAddClick} className='btn btn-primary w-100'> Add </button>
+                        <button onClick={onUpdateClick} className='btn btn-warning w-100'>Update</button>
+                        <button onClick={onCancelClick} className='btn btn-dark w-100'>Cancel</button>
                     </div>
+
                 }
             </div>
         </div>

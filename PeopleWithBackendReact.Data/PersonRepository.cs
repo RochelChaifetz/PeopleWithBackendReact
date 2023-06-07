@@ -46,5 +46,9 @@
             }
         }
 
+        public void DeleteAll(object ids)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

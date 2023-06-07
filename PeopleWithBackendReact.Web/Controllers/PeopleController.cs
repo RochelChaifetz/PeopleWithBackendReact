@@ -46,6 +46,14 @@ namespace PeopleWithBackendReact.Web.Controllers
             repo.Delete(person);
         }
 
+        [HttpPost]
+        [Route("deleteall")]
+        public void DeleteAll(ViewModel model)
+        {
+            var repo = new PersonRepository(_connectionString);
+            repo.DeleteAll(model.Ids);
+        }
+
 
     }
 }

@@ -12,8 +12,19 @@ class PeopleTable extends React.Component {
             lastName: '',
             age: ''
         },
-        isEditing: false
-    }
+        isEditing: false,
+        checkedPeople: []
+    };
+
+    onDeleteAllClick = () => {
+        const { checkedPeople } = this.state;
+        axios.post('/api/people/deleteall', {
+            ids: [...checkedPeople]
+        }).then(() => {
+            this.getAllPeople();
+        });
+    };
+
 
     getAllPeople = () => {
         axios.get('/api/people/getall').then(res => {
@@ -39,7 +50,7 @@ class PeopleTable extends React.Component {
             const newState = produce(this.state, draftState => {
                 draftState.person = {
                     firstName: '',
-                    lastNmae: '',
+                    lastName: '',
                     age: '',
                     id: ''
                 };
@@ -67,7 +78,7 @@ class PeopleTable extends React.Component {
             draftState.isEditing = false;
             draftState.person = {
                 firstName: '',
-                lastNmae: '',
+                lastName: '',
                 age: '',
                 id: ''
             };
@@ -77,13 +88,13 @@ class PeopleTable extends React.Component {
 
     onUpdateClick = () => {
         const { person } = this.state;
-        axios.post('/api/people/updateperson', { person }).then(() => {
+        axios.post('/api/people/updateperson', person).then(() => {
             this.getAllPeople();
             const newState = produce(this.state, draftState => {
                 draftState.isEditing = false;
                 draftState.person = {
                     firstName: '',
-                    lastNmae: '',
+                    lastName: '',
                     age: '',
                     id: ''
                 };
@@ -92,11 +103,49 @@ class PeopleTable extends React.Component {
         });
     }
 
+    onCheck = id => {
+        const { checkedPeople } = this.state;
+        const updatedCheckedPeople = checkedPeople.includes(id)
+            ? checkedPeople.filter(checkedId => checkedId !== id)
+            : [...checkedPeople, id];
+        this.setState({ checkedPeople: updatedCheckedPeople });
+    };
+
+
+    onCheckAllClick = () => {
+        const { people, checkedPeople } = this.state;
+        const newState = produce(this.state, draftState => {
+            people.forEach((p) => {
+                if (!checkedPeople.includes(p.id)) {
+                    draftState.checkedPeople = [...draftState.checkedPeople, p.id];
+                }
+            })
+        })
+        this.setState(newState);
+    }
+
+    onUncheckAllClick = () => {
+        const newState = produce(this.state, draftState => {
+            draftState.checkedPeople = [];
+        })
+        this.setState(newState);
+    }
+
+    //onDeleteAllClick = () => {
+    //    const { checkedPeople } = this.state;
+    //    axios.post('/api/people/deleteall', {
+    //            ids: [...checkedPeople]
+    //        }).then(() => {
+    //            this.getAllPeople();
+    //        });
+    //};
+
 
 
     render() {
-        const { people, person, isEditing } = this.state;
-        return (<>
+        const { people, checkedPeople, person, isEditing } = this.state;
+        return (
+            <>
                 <div className='container' style={{ marginTop: 60 }}>
                     <PersonForm
                         isEditing={isEditing}
@@ -108,6 +157,12 @@ class PeopleTable extends React.Component {
                     <table className='table table-hover table-striped table-bordered'>
                         <thead>
                             <tr>
+                                <th style={{ width: '15%' }}>
+                                    <button onClick={this.onDeleteAllClick} className="btn btn-danger w-100">Delete All</button>
+                                    <button onClick={this.onCheckAllClick} className="btn btn-outline-danger w-100 mt-2">Check All</button>
+                                    <button onClick={this.onUncheckAllClick} className="btn btn-outline-danger w-100 mt-2">Uncheck All</button>
+                                </th>
+
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Age</th>
@@ -116,13 +171,18 @@ class PeopleTable extends React.Component {
                         </thead>
                         <tbody>
                             {people.map(p => {
-                                return <PersonRow
-                                    onEditClick={() => this.onEditClick(p)}
-                                    onDeleteClick={() => this.onDeleteClick(p)}
-                                    key={p.id}
-                                    person={p} />
-                            }
-                            )}
+                                return (
+                                    <PersonRow
+                                        onEditClick={() => this.onEditClick(p)}
+                                        onDeleteClick={() => this.onDeleteClick(p)}
+                                        onCheck={this.onCheck}
+                                        isChecked={checkedPeople.includes(p.id)}
+                                        key={p.id}
+                                        person={p}
+                                    />
+                                );
+                            })}
+
                         </tbody>
                     </table>
                 </div>
